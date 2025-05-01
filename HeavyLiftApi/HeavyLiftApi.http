@@ -1,0 +1,6 @@
+@HeavyLiftApi_HostAddress = http://localhost:5129
+
+GET {{HeavyLiftApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
