@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace HeavyLiftApi.Controllers
@@ -26,21 +27,21 @@ namespace HeavyLiftApi.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost("login")]
+        [HttpPost("GetAuthorization")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            user User = new user();
+            user User = null;
+            if(string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+            {
+                return BadRequest(new { message = "Email and password are required." });
+            }
             try
             {
-                if(string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
-                {
-                    return BadRequest(new { message = "Email and password are required." });
-                }
-                User = await _context.users.FirstOrDefaultAsync(u => u.email == request.Email && u.password == request.Password);
+                User = await _context.users.FirstOrDefaultAsync(u => u.email == request.Email && u.password == HashPassword(request.Password));
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "An error occurred while processing your request.", error = ex.Message });
+                return StatusCode(500,"An error occurred while processing your request.");
             }
             if (User == null)
             {
@@ -65,5 +66,14 @@ namespace HeavyLiftApi.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(password);
+                var hash = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hash);
+            }
+        }
     }
 }
