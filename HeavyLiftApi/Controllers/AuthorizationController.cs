@@ -1,6 +1,7 @@
 ﻿using HeavyLiftApi.Data;
 using HeavyLiftApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,6 @@ namespace HeavyLiftApi.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    [AllowAnonymous]
     public class AuthorizationController: Controller
     {
         private readonly AppDbContext _context;
@@ -27,6 +27,7 @@ namespace HeavyLiftApi.Controllers
             _configuration = configuration;
         }
 
+        [AllowAnonymous]
         [HttpPost("GetAuthorization")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -49,6 +50,21 @@ namespace HeavyLiftApi.Controllers
             }
             var token = GenerateJwtToken(User.id);
             return Ok(new { Token = token });
+        }
+
+        [Authorize]
+        [HttpPost("RefrshToken")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            int userId = -1;
+            bool succes = int.TryParse(User.FindFirst("UserID")?.Value, out userId);
+            if (succes && userId > 0)
+            {
+                var token = GenerateJwtToken(userId);
+                return Ok(new { Token = token });
+            }
+            return BadRequest(new { message = "Error occured while reading userID" });
+
         }
 
         private string GenerateJwtToken(int userid)
