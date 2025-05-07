@@ -53,7 +53,7 @@ namespace HeavyLiftApi.Controllers
         }
 
         [Authorize]
-        [HttpPost("RefrshToken")]
+        [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken()
         {
             int userId = -1;
@@ -64,7 +64,6 @@ namespace HeavyLiftApi.Controllers
                 return Ok(new { Token = token });
             }
             return BadRequest(new { message = "Error occured while reading userID" });
-
         }
 
         private string GenerateJwtToken(int userid)
