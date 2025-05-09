@@ -52,6 +52,7 @@ public partial class AppDbContext : DbContext
                     v => JsonSerializer.Serialize(v, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }),
                     v => JsonSerializer.Deserialize<List<ExerciseEntry>>(v, new JsonSerializerOptions()) ?? new List<ExerciseEntry>()
                 );
+            entity.Property(e => e.name).HasMaxLength(30);
 
             entity.HasOne(d => d.users).WithMany(p => p.customtrainingplans)
                 .HasForeignKey(d => d.users_id)
@@ -84,6 +85,8 @@ public partial class AppDbContext : DbContext
                     v => JsonSerializer.Serialize(v, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }),
                     v => JsonSerializer.Deserialize<List<ExerciseEntry>>(v, new JsonSerializerOptions()) ?? new List<ExerciseEntry>()
                 );
+
+            entity.Property(e => e.name).HasMaxLength(30);
 
             entity.HasOne(d => d.users).WithMany(p => p.traininghistories)
                 .HasForeignKey(d => d.users_id)

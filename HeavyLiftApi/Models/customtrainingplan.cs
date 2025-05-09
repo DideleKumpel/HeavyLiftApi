@@ -9,6 +9,8 @@ public partial class customtrainingplan
 
     public List<ExerciseEntry> plan { get; set; } = null!;
 
+    public string name { get; set; } = null!;
+
     public int users_id { get; set; }
 
     public virtual user users { get; set; } = null!;

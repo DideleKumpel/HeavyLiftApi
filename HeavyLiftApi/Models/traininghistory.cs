@@ -9,6 +9,8 @@ public partial class traininghistory
 
     public List<ExerciseEntry> plan { get; set; } = null!;
 
+    public string name { get; set; } = null!;
+
     public DateOnly date { get; set; }
 
     public TimeSpan time { get; set; }
