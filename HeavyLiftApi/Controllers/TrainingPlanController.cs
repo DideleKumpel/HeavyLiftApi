@@ -55,5 +55,29 @@ namespace HeavyLiftApi.Controllers
             }
             return BadRequest(new { message = "Error occured while reading userID" });
         }
+
+        [HttpGet("DeleteTrainingPlan")]
+        public async Task<IActionResult> DeleteTrainingPlan(int PlanId)
+        {
+            int userId = -1;
+            bool succes = int.TryParse(User.FindFirst("UserID")?.Value, out userId);
+            if (succes)
+            {
+                customtrainingplan trainingPlan = await _context.customtrainingplans.FirstOrDefaultAsync(p => p.id == PlanId && p.users_id == userId);
+                if (trainingPlan == null)
+                {
+                    return NotFound(new { message = "No training plans found for this user." });
+                }
+                else
+                {
+                    _context.customtrainingplans.Remove(trainingPlan);
+                    await _context.SaveChangesAsync();
+                    return Ok("Training plan got deleted");
+                }
+
+            }
+            return BadRequest(new { message = "Error occured while reading userID" });
+        }
+
     }
 }
